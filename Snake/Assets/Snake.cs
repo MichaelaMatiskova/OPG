@@ -79,7 +79,7 @@ public class Snake : MonoBehaviour
 
         _segments.Clear();
         _segments.Add(transform);
-
+        Score.scoreValue = 0;
         //transform.position = Vector3.zero;
 
     }
@@ -89,6 +89,7 @@ public class Snake : MonoBehaviour
         //if (other.tag == "Food")
         if (other.gameObject.CompareTag("Food"))
         {
+            Score.scoreValue += 10; 
             Grow();
         }
         //else if (other.tag == "Obstacle")
