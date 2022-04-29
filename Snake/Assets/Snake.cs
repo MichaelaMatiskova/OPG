@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(BoxCollider2D))]
 public class Snake : MonoBehaviour
@@ -10,11 +11,17 @@ public class Snake : MonoBehaviour
 
     public Transform segmentPrefab;
 
+    //public GameOverScreen gameOverScreen; 
+    public GameObject gameOverScreen;
 
     private void Start()
     {
         _segments = new List<Transform>();
         //_segments.Add(this.transform);
+
+        //Canvas c = gameObject.GetComponent<Canvas>();
+        //gameOverScreen = gameObject.GetComponent(typeof(GameOverScreen)) as GameOverScreen;
+        //gameOverScreen = GameObject.FindGameObjectsWithTag("GameOverScreenTag")[0] as GameOverScreen;
 
         ResetState();
     }
@@ -93,8 +100,14 @@ public class Snake : MonoBehaviour
         }
         else if (other.tag == "Obstacle")
         {
-            ResetState();
+            GameOver(); 
         }
+    }
+
+    private void GameOver()
+    {
+        //gameOverScreen.GetComponent<GameOverScreen>().Setup(Score.scoreValue); 
+        SceneManager.LoadScene("GameOverScreen");
     }
 }
 
