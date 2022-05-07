@@ -1,20 +1,19 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-[RequireComponent(typeof(BoxCollider2D))]
 public class Snake : MonoBehaviour
 {
-    private Vector2 _direction = Vector2.right;
+    private Vector2 direction = Vector2.right;
 
-    private List<Transform> _segments;
+    private List<Transform> segments;
 
     public Transform segmentPrefab;
-
+    private Vector2 input;
 
     private void Start()
     {
-        _segments = new List<Transform>();
-        //_segments.Add(this.transform);
+        segments = new List<Transform>();
 
         ResetState();
     }
@@ -22,49 +21,53 @@ public class Snake : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.UpArrow))
+        if (direction.x != 0f)
         {
-            _direction = Vector2.up;
+            if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
+            {
+                input = Vector2.up;
+            }
+            else if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
+            {
+                input = Vector2.down;
+            }
         }
-        else if (Input.GetKeyDown(KeyCode.DownArrow))
+        if (direction.y != 0f) 
         {
-            _direction = Vector2.down;
-        }
-        else if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            _direction = Vector2.left;
-        }
-        else if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            _direction = Vector2.right;
+            if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
+            {
+                input = Vector2.left;
+            }
+            else if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
+            {
+                input = Vector2.right;
+            }
         }
     }
 
     private void FixedUpdate()
     {
-        //if (input != Vector2.zero)
-        //{
-         //   direction = input;
-        //}
-
-        for (int i = _segments.Count - 1; i > 0; i--)
+        if (input != Vector2.zero)
         {
-            _segments[i].position = _segments[i - 1].position;
+            direction = input;
+        }
+
+        for (int i = segments.Count - 1; i > 0; i--)
+        {
+            segments[i].position = segments[i - 1].position;
         }
 
         transform.position = new Vector2(
-            Mathf.Round(transform.position.x) + _direction.x,
-            Mathf.Round(transform.position.y) + _direction.y//,
-            //0.0f
-        );
+            Mathf.Round(transform.position.x) + direction.x,
+            Mathf.Round(transform.position.y) + direction.y);
     }
 
     private void Grow()
     {
         Transform segment = Instantiate(segmentPrefab);
-        segment.position = _segments[_segments.Count - 1].position;
+        segment.position = segments[segments.Count - 1].position;
 
-        _segments.Add(segment);
+        segments.Add(segment);
     }
 
     private void ResetState()
@@ -72,30 +75,32 @@ public class Snake : MonoBehaviour
         //_direction = Vector2.right;
         transform.position = Vector3.zero;
 
-        for (int i = 1; i < _segments.Count; i++)
+        for (int i = 1; i < segments.Count; i++)
         {
-            Destroy(_segments[i].gameObject);
+            Destroy(segments[i].gameObject);
         }
 
-        _segments.Clear();
-        _segments.Add(transform);
-
-        //transform.position = Vector3.zero;
-
+        segments.Clear();
+        segments.Add(transform);
+        Score.scoreValue = 0;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        //if (other.tag == "Food")
-        if (other.gameObject.CompareTag("Food"))
+        if (other.tag == "Food")
         {
             Grow();
+            Score.scoreValue += 10;
         }
-        //else if (other.tag == "Obstacle")
-        else if (other.gameObject.CompareTag("Obstacle"))
+        else if (other.tag == "Obstacle")
         {
-            ResetState();
+            GameOver(); 
         }
+    }
+
+    private void GameOver()
+    {
+        SceneManager.LoadScene("GameOverScreen");
     }
 }
 
