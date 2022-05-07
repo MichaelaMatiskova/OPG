@@ -2,26 +2,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-[RequireComponent(typeof(BoxCollider2D))]
 public class Snake : MonoBehaviour
 {
-    private Vector2 _direction = Vector2.right;
+    private Vector2 direction = Vector2.right;
 
-    private List<Transform> _segments;
+    private List<Transform> segments;
 
     public Transform segmentPrefab;
-
-    //public GameOverScreen gameOverScreen; 
-    public GameObject gameOverScreen;
+    private Vector2 input;
 
     private void Start()
     {
-        _segments = new List<Transform>();
-        //_segments.Add(this.transform);
-
-        //Canvas c = gameObject.GetComponent<Canvas>();
-        //gameOverScreen = gameObject.GetComponent(typeof(GameOverScreen)) as GameOverScreen;
-        //gameOverScreen = GameObject.FindGameObjectsWithTag("GameOverScreenTag")[0] as GameOverScreen;
+        segments = new List<Transform>();
 
         ResetState();
     }
@@ -29,49 +21,53 @@ public class Snake : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
+        if (direction.x != 0f)
         {
-            _direction = Vector2.up;
+            if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
+            {
+                input = Vector2.up;
+            }
+            else if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
+            {
+                input = Vector2.down;
+            }
         }
-        else if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
+        if (direction.y != 0f) 
         {
-            _direction = Vector2.down;
-        }
-        else if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
-        {
-            _direction = Vector2.left;
-        }
-        else if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
-        {
-            _direction = Vector2.right;
+            if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A))
+            {
+                input = Vector2.left;
+            }
+            else if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D))
+            {
+                input = Vector2.right;
+            }
         }
     }
 
     private void FixedUpdate()
     {
-        //if (input != Vector2.zero)
-        //{
-         //   direction = input;
-        //}
-
-        for (int i = _segments.Count - 1; i > 0; i--)
+        if (input != Vector2.zero)
         {
-            _segments[i].position = _segments[i - 1].position;
+            direction = input;
+        }
+
+        for (int i = segments.Count - 1; i > 0; i--)
+        {
+            segments[i].position = segments[i - 1].position;
         }
 
         transform.position = new Vector2(
-            Mathf.Round(transform.position.x) + _direction.x,
-            Mathf.Round(transform.position.y) + _direction.y//,
-            //0.0f
-        );
+            Mathf.Round(transform.position.x) + direction.x,
+            Mathf.Round(transform.position.y) + direction.y);
     }
 
     private void Grow()
     {
         Transform segment = Instantiate(segmentPrefab);
-        segment.position = _segments[_segments.Count - 1].position;
+        segment.position = segments[segments.Count - 1].position;
 
-        _segments.Add(segment);
+        segments.Add(segment);
     }
 
     private void ResetState()
@@ -79,16 +75,14 @@ public class Snake : MonoBehaviour
         //_direction = Vector2.right;
         transform.position = Vector3.zero;
 
-        for (int i = 1; i < _segments.Count; i++)
+        for (int i = 1; i < segments.Count; i++)
         {
-            Destroy(_segments[i].gameObject);
+            Destroy(segments[i].gameObject);
         }
 
-        _segments.Clear();
-        _segments.Add(transform);
+        segments.Clear();
+        segments.Add(transform);
         Score.scoreValue = 0;
-        //transform.position = Vector3.zero;
-
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -106,7 +100,6 @@ public class Snake : MonoBehaviour
 
     private void GameOver()
     {
-        //gameOverScreen.GetComponent<GameOverScreen>().Setup(Score.scoreValue); 
         SceneManager.LoadScene("GameOverScreen");
     }
 }

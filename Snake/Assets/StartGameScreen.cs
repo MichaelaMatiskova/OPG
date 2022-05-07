@@ -6,8 +6,8 @@ using UnityEngine.SceneManagement;
 public class StartGameScreen : MonoBehaviour
 {
     // Start is called before the first frame update
-    public void ChangeScene(string sceneChange)
+    public void ChangeScene()
     {
-        SceneManager.LoadScene(sceneChange); 
+        SceneManager.LoadScene("Snake"); 
     }
 }

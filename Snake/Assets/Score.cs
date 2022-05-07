@@ -12,13 +12,10 @@ public class Score : MonoBehaviour
     void Start()
     {
         score = GetComponent<Text>();
-
     }
 
     void Update()
     {
         score.text = "Score: " + scoreValue;
     }
-
-
 }
